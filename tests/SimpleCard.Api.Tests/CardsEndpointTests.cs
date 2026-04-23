@@ -152,6 +152,19 @@ public class CardsEndpointTests : IClassFixture<TestWebApplicationFactory>
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+
+    [Fact]
+    public async Task POST_cards_transactions_MissingTransactionDate_Returns400()
+    {
+        var cardResp = await _client.PostAsJsonAsync("/api/cards", new { creditLimit = 1000m });
+        var card = await cardResp.Content.ReadFromJsonAsync<CardDto>();
+
+        var response = await _client.PostAsJsonAsync(
+            $"/api/cards/{card!.Id}/transactions",
+            new { description = "Test", amount = 25m });
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }
 
 file record CardDto(Guid Id, decimal CreditLimit);

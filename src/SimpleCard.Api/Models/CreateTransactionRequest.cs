@@ -6,6 +6,7 @@ public record CreateTransactionRequest(
     [Required]
     [MaxLength(500)]
     string Description,
-    DateOnly TransactionDate,
+    [Required]
+    DateOnly? TransactionDate,
     [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0.")]
     decimal Amount);

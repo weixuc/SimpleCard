@@ -32,7 +32,7 @@ public class CardsController(ISender mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = new CreateTransactionCommand(
-            cardId, request.Description, request.TransactionDate, request.Amount);
+            cardId, request.Description, request.TransactionDate!.Value, request.Amount);
 
         var result = await mediator.Send(command, cancellationToken);
 

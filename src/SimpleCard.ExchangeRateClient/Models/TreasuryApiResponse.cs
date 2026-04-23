@@ -2,13 +2,13 @@
 
 namespace SimpleCard.ExchangeRateClient.Models;
 
-public class TreasuryApiResponse
+internal class TreasuryApiResponse
 {
     [JsonPropertyName("data")]
     public List<ExchangeRateEntry> Data { get; set; } = [];
 }
 
-public class ExchangeRateEntry
+internal class ExchangeRateEntry
 {
     [JsonPropertyName("exchange_rate")]
     public string ExchangeRate { get; set; } = string.Empty;

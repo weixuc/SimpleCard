@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
 using SimpleCard.Domain.Interfaces;
 using SimpleCard.ExchangeRateClient.Models;
@@ -55,8 +56,8 @@ public class TreasuryExchangeRateService(HttpClient httpClient, IMemoryCache cac
         if (apiResponse?.Data is not { Count: > 0 } data) return null;
 
         var item = data[0];
-        var rate = decimal.Parse(item.ExchangeRate);
-        var recordDate = DateOnly.Parse(item.RecordDate);
+        var rate = decimal.Parse(item.ExchangeRate, CultureInfo.InvariantCulture);
+        var recordDate = DateOnly.Parse(item.RecordDate, CultureInfo.InvariantCulture);
 
         return new ExchangeRateResult(rate, recordDate);
     }

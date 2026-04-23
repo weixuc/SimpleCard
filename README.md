@@ -86,11 +86,30 @@ SimpleCard.sln
 
 ### With Docker (recommended)
 
+Docker Compose uses a two-file setup:
+
+| File | Purpose |
+|---|---|
+| `docker-compose.yml` | Production base — `ASPNETCORE_ENVIRONMENT=Production`, Swagger off, DB port not exposed |
+| `docker-compose.override.yml` | Dev overrides — auto-merged by Docker Compose, sets `Development`, exposes DB on `5432` |
+
+**Development** (default — override is merged automatically):
+
 ```bash
 docker compose up --build
 ```
 
-The API starts on **http://localhost:8080**. Swagger UI is available at **http://localhost:8080/swagger**.
+The API starts on **http://localhost:8080**. Swagger UI is at **http://localhost:8080/swagger**.
+
+**Production simulation** (base file only, no override):
+
+```bash
+POSTGRES_PASSWORD=secret docker compose -f docker-compose.yml up --build
+```
+
+The API starts on **http://localhost:8080**. Swagger is disabled.
+
+EF Core migrations are applied automatically on startup in both modes — no manual migration step needed.
 
 To stop and remove volumes:
 

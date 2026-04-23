@@ -124,9 +124,9 @@ Edit `src/SimpleCard.Api/appsettings.json`:
 dotnet run --project src/SimpleCard.Api
 ```
 
-The API starts on **http://localhost:5000** (or the port shown in the terminal). Swagger UI is at **/swagger**.
+The API starts on **http://localhost:5000** (or the port shown in the terminal). Swagger UI is at **/swagger** (only available when `ASPNETCORE_ENVIRONMENT=Development`).
 
-> The database schema is created automatically via `EnsureCreated()` on startup -- no migrations needed.
+> The database schema is applied automatically via EF Core migrations on startup.
 
 ---
 
@@ -319,7 +319,7 @@ All errors return an [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) Problem 
 
 A GitHub Actions pipeline runs on every push and pull request to `main`.
 
-It restores, builds, and runs all 36 tests:
+It restores, builds, and runs all 40 tests:
 
 ```
 .github/workflows/ci.yml
@@ -380,7 +380,7 @@ The ALB URL is printed as an output. The `/health` endpoint is used for both ALB
 
 ## Testing
 
-Run the full test suite (36 tests across 3 projects):
+Run the full test suite (40 tests across 3 projects):
 
 ```bash
 dotnet test SimpleCard.sln
@@ -418,6 +418,6 @@ The API test project uses a `TestWebApplicationFactory` that:
 
 **Hand-rolled `FakeExchangeRateService`** -- Uses `Func<>` delegate properties instead of a mocking library. This avoids Castle.Core/Moq runtime compatibility issues on .NET 10 and produces simpler, more readable test setup code.
 
-**No migrations** -- `EnsureCreated()` is called at startup for simplicity. In a production system with evolving schema, EF Core migrations or a tool like Flyway would be used instead.
+**EF Core migrations** -- `MigrateAsync()` is called at startup so the schema evolves safely without data loss. The initial migration is in `src/SimpleCard.Infrastructure/Migrations/`. Adding a new migration after a schema change: `dotnet ef migrations add <Name> -p src/SimpleCard.Infrastructure -s src/SimpleCard.Api`.
 
 **REST over event-driven for this scope** -- This service exposes a synchronous REST API because the assignment is self-contained and all operations are request/response by nature. In a real payments platform, transaction creation would likely publish a `TransactionCreated` event to a message broker (e.g. Kafka) so that downstream services -- fraud detection, ledger reconciliation, notification delivery -- can react independently without tight coupling. The CQRS structure already separates writes from reads, making it straightforward to add an event publisher inside a command handler without changing the API contract.
